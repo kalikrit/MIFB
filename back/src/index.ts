@@ -3,16 +3,16 @@ import express from 'express'
 const app = express()
 const PORT = process.env.PORT || 3001
 
-// ТОЛЬКО CORS - больше ничего!
+// Минимальный CORS - ничего лишнего
 app.use((req, res, next) => {
-  // Всегда разрешаем локальный фронт
-  res.header('Access-Control-Allow-Origin', 'http://localhost:5173')
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-  res.header('Access-Control-Allow-Headers', 'Content-Type')
-  res.header('Access-Control-Allow-Credentials', 'true')
+  // Жестко задаем origin
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
   
+  // Отвечаем на preflight
   if (req.method === 'OPTIONS') {
-    return res.sendStatus(204)
+    return res.status(204).end()
   }
   
   next()
@@ -20,7 +20,7 @@ app.use((req, res, next) => {
 
 app.get('/api/left', (req, res) => {
   res.json({
-    items: [{ id: 1 }, { id: 2 }, { id: 3 }],
+    items: Array.from({ length: 20 }, (_, i) => ({ id: i + 1 })),
     total: 1000000,
     hasMore: true,
     nextOffset: 20
