@@ -7,43 +7,24 @@ import helmet from 'helmet'
 const app = express()
 const PORT = process.env.PORT || 3001
 
-// Настройки CORS - разрешаем только нужные origins
-const corsOptions = {
-  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
-    // Разрешаем запросы без origin (например, curl, Postman)
-    if (!origin) {
-      return callback(null, true)
-    }
-    
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'http://localhost:3000',
-      'http://localhost:4173',
-      'https://mifb.onrender.com',
-      // Добавишь свой GitHub Pages URL позже
-    ]
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      console.log('❌ CORS blocked origin:', origin)
-      callback(new Error('Not allowed by CORS'))
-    }
-  },
+// ⚠️ ВАЖНО: Сначала CORS, потом всё остальное
+app.use(cors({
+  origin: 'http://localhost:5173', // конкретный origin, не функция
   credentials: true,
   optionsSuccessStatus: 200
-}
+}))
 
-// Middleware - ВАЖЕН ПОРЯДОК!
-app.use(cors(corsOptions))
-
-// Явная обработка preflight запросов
-app.options('*', cors(corsOptions))
+// Явная обработка OPTIONS для всех маршрутов
+app.options('*', cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+  optionsSuccessStatus: 200
+}))
 
 // Helmet после CORS
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" },
-  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' }
 }))
 
 app.use(compression())
