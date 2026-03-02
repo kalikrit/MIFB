@@ -1,9 +1,11 @@
 import express from 'express'
+import fs from 'fs'
+import path from 'path'
 
 const app = express()
 const PORT = process.env.PORT || 3001
 
-// ✅ CORS настроен и работает
+// ✅ CORS
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173')
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
@@ -28,6 +30,13 @@ let selectedItemsOrder: number[] = []
 const selectedSet = new Set<number>()
 
 // ============ ВСПОМОГАТЕЛЬНЫЕ ============
+// Читаем версию из package.json при старте
+const packageJson = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '../package.json'), 'utf-8')
+)
+const VERSION = packageJson.version
+const COMMIT_HASH = process.env.RENDER_GIT_COMMIT || 'local' // Render передает хеш коммита
+
 const getLeftItems = (search: string, offset: number, limit: number) => {
   let candidates: number[] = []
   
@@ -73,6 +82,16 @@ const getRightItems = (search: string, offset: number, limit: number) => {
 }
 
 // ============ API ============
+// эндпоинт с версией
+app.get('/api/version', (req, res) => {
+  res.json({
+    version: VERSION,
+    commit: COMMIT_HASH,
+    environment: process.env.NODE_ENV || 'development',
+    timestamp: new Date().toISOString()
+  })
+})
+
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ok', 

@@ -10,6 +10,7 @@ export interface PageResponse {
 }
 
 export const api = {
+  baseUrl: API_BASE_URL, 
   // Левый список
   getLeftItems: async (search: string, offset: number, limit: number): Promise<PageResponse> => {
     const params = new URLSearchParams({
