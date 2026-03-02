@@ -1,4 +1,3 @@
-// src/index.ts
 import express, { Request, Response } from 'express'
 import cors from 'cors'
 import compression from 'compression'
@@ -8,10 +7,10 @@ import helmet from 'helmet'
 const app = express()
 const PORT = process.env.PORT || 3001
 
-// Настройки CORS для всех окружений
+// Настройки CORS - разрешаем только нужные origins
 const corsOptions = {
   origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
-    // Разрешаем запросы без origin (например, мобильные приложения, curl)
+    // Разрешаем запросы без origin (например, curl, Postman)
     if (!origin) {
       return callback(null, true)
     }
@@ -24,9 +23,10 @@ const corsOptions = {
       // Добавишь свой GitHub Pages URL позже
     ]
     
-    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+    if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true)
     } else {
+      console.log('❌ CORS blocked origin:', origin)
       callback(new Error('Not allowed by CORS'))
     }
   },
@@ -34,30 +34,19 @@ const corsOptions = {
   optionsSuccessStatus: 200
 }
 
-// Middleware
-app.use(helmet())
-app.use(compression())
+// Middleware - ВАЖЕН ПОРЯДОК!
 app.use(cors(corsOptions))
 
-// Добавляем обработку preflight запросов явно
+// Явная обработка preflight запросов
 app.options('*', cors(corsOptions))
 
-app.use((req, res, next) => {
-  const origin = req.headers.origin
-  if (origin) {
-    res.setHeader('Access-Control-Allow-Origin', origin)
-  }
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
-  res.setHeader('Access-Control-Allow-Credentials', 'true')
-  
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204)
-  }
-  
-  next()
-})
+// Helmet после CORS
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
+}))
 
+app.use(compression())
 app.use(morgan('combined'))
 app.use(express.json())
 
@@ -122,7 +111,6 @@ const getRightItems = (search: string, offset: number, limit: number) => {
   const paginated = candidates.slice(offset, offset + limit)
   
   return {
-// src/index.ts (продолжение)
     items: paginated.map(id => ({ id })),
     total: candidates.length,
     hasMore: offset + limit < candidates.length,
