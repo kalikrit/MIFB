@@ -42,15 +42,17 @@ app.use(cors(corsOptions))
 // Добавляем обработку preflight запросов явно
 app.options('*', cors(corsOptions))
 
-// Добавляем заголовки вручную (на всякий случай)
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', req.headers.origin || '*')
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
-  res.header('Access-Control-Allow-Credentials', 'true')
+  const origin = req.headers.origin
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin)
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+  res.setHeader('Access-Control-Allow-Credentials', 'true')
   
   if (req.method === 'OPTIONS') {
-    return res.sendStatus(200)
+    return res.sendStatus(204)
   }
   
   next()
