@@ -2,31 +2,22 @@ import express, { Request, Response } from 'express'
 import cors from 'cors'
 import compression from 'compression'
 import morgan from 'morgan'
-import helmet from 'helmet'
+// import helmet from 'helmet' // ⚠️ ВРЕМЕННО отключаем helmet для теста
 
 const app = express()
 const PORT = process.env.PORT || 3001
 
-// ⚠️ ВАЖНО: Сначала CORS, потом всё остальное
+// ⚠️ МАКСИМАЛЬНО ПРОСТОЙ CORS - разрешаем всё
 app.use(cors({
-  origin: 'http://localhost:5173', // конкретный origin, не функция
+  origin: true, // разрешаем любой origin
   credentials: true,
   optionsSuccessStatus: 200
 }))
 
-// Явная обработка OPTIONS для всех маршрутов
-app.options('*', cors({
-  origin: 'http://localhost:5173',
-  credentials: true,
-  optionsSuccessStatus: 200
-}))
+// Явная обработка OPTIONS
+app.options('*', cors())
 
-// Helmet после CORS
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: 'cross-origin' },
-  crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' }
-}))
-
+// Остальные middleware
 app.use(compression())
 app.use(morgan('combined'))
 app.use(express.json())
