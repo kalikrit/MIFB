@@ -1,26 +1,40 @@
 import express, { Request, Response } from 'express'
-import cors from 'cors'
 import compression from 'compression'
 import morgan from 'morgan'
-// import helmet from 'helmet' // ⚠️ ВРЕМЕННО отключаем helmet для теста
+import helmet from 'helmet'
+// import cors from 'cors' // 👈 можно удалить, если не используем
 
 const app = express()
 const PORT = process.env.PORT || 3001
 
-// ⚠️ МАКСИМАЛЬНО ПРОСТОЙ CORS - разрешаем всё
-app.use(cors({
-  origin: true, // разрешаем любой origin
-  credentials: true,
-  optionsSuccessStatus: 200
-}))
-
-// Явная обработка OPTIONS
-app.options('*', cors())
+// ✅ Ручной CORS middleware (работает 100%)
+app.use((req, res, next) => {
+  const origin = req.headers.origin
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin)
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*')
+  }
+  
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+  res.setHeader('Access-Control-Allow-Credentials', 'true')
+  
+  // Respond to preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204)
+  }
+  
+  next()
+})
 
 // Остальные middleware
 app.use(compression())
 app.use(morgan('combined'))
 app.use(express.json())
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' }
+}))
 
 // ============ ХРАНИЛИЩЕ ДАННЫХ ============
 const ITEMS_COUNT = 1_000_000
