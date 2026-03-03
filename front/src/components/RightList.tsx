@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useRef, useEffect } from 'react'
+import { useDeselectItem } from '../hooks/useItemMutations'
 import { api } from '../api/client'
 
 interface RightListProps {
@@ -35,6 +36,8 @@ export const RightList = ({ searchTerm }: RightListProps) => {
     overscan: 5,
   })
   
+  const deselectMutation = useDeselectItem()
+
   useEffect(() => {
     const lastIndex = rowVirtualizer.range?.endIndex ?? 0
     if (
@@ -108,7 +111,7 @@ export const RightList = ({ searchTerm }: RightListProps) => {
                   <span className="item-id">#{item.id}</span>
                   <button 
                     className="deselect-btn"
-                    onClick={() => console.log('Убрать', item.id)}
+                    onClick={() => deselectMutation.mutate(item.id)}
                   >
                     ×
                   </button>

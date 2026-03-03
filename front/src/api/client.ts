@@ -36,6 +36,28 @@ export const api = {
     if (!response.ok) throw new Error('Failed to fetch right items')
     return response.json()
   },
+
+  // Выбрать элемент (добавить в правый список)
+  selectItem: async (id: number) => {
+    const response = await fetch(`${API_BASE_URL}/api/select`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    })
+    if (!response.ok) throw new Error('Failed to select item')
+    return response.json()
+  },
+
+  // Отменить выбор (удалить из правого списка)
+  deselectItem: async (id: number) => {
+    const response = await fetch(`${API_BASE_URL}/api/deselect`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    })
+    if (!response.ok) throw new Error('Failed to deselect item')
+    return response.json()
+  },
   
   // Действия (для batch-очереди)
   sendBatch: async (actions: any[]) => {

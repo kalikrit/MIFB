@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useRef, useState, useEffect } from 'react'
+import { useSelectItem } from '../hooks/useItemMutations'
 import { api } from '../api/client'
 import './LeftList.css'
 
@@ -41,6 +42,8 @@ export const LeftList = ({ searchTerm }: LeftListProps) => {
     overscan: 5, // сколько строк рендерить выше/ниже видимой области
   })
   
+  const selectMutation = useSelectItem()
+
   // Подгрузка при скролле
   useEffect(() => {
     const lastIndex = rowVirtualizer.range?.endIndex ?? 0
@@ -122,7 +125,7 @@ export const LeftList = ({ searchTerm }: LeftListProps) => {
                     <span className="item-id">#{item.id}</span>
                     <button 
                       className="select-btn"
-                      onClick={() => console.log('Выбрать', item.id)} // TODO: добавить мутацию
+                      onClick={() => selectMutation.mutate(item.id)}
                     >
                       +
                     </button>
