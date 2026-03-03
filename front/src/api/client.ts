@@ -59,6 +59,16 @@ export const api = {
     return response.json()
   },
   
+  reorderItems: async (order: number[]) => {
+    const response = await fetch(`${API_BASE_URL}/api/reorder`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ order })
+    })
+    if (!response.ok) throw new Error('Failed to reorder items')
+    return response.json()
+  },
+  
   // Действия (для batch-очереди)
   sendBatch: async (actions: any[]) => {
     const response = await fetch(`${API_BASE_URL}/api/batch`, {
