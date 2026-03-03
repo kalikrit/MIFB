@@ -22,9 +22,10 @@ import { useDeselectItem, useReorderItems } from '../hooks/useItemMutations'
 
 interface RightListProps {
   searchTerm: string
+  onTotalChange?: (total: number) => void
 }
 
-export const RightList = ({ searchTerm }: RightListProps) => {
+export const RightList = ({ searchTerm, onTotalChange }: RightListProps) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [activeId, setActiveId] = useState<number | null>(null)
   const deselectMutation = useDeselectItem()
@@ -56,6 +57,12 @@ export const RightList = ({ searchTerm }: RightListProps) => {
   const totalCount = data?.pages[0]?.total ?? 0
   const fullOrder = data?.pages[0]?.fullOrder ?? [] // полный порядок для DnD
   
+  useEffect(() => {
+    if (onTotalChange) {  
+      onTotalChange(totalCount)
+    }
+  }, [totalCount, onTotalChange])
+
   // Виртуализация
   const rowVirtualizer = useVirtualizer({
     count: hasNextPage ? allItems.length + 1 : allItems.length,

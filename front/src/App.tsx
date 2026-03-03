@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { useState, useDeferredValue } from 'react'
+import { useState } from 'react'
 import { useDebounce } from './hooks/useDebounce'
 import { LeftList } from './components/LeftList'
 import { RightList } from './components/RightList'
@@ -21,6 +21,7 @@ function App() {
   const [leftSearch, setLeftSearch] = useState('')
   const [rightSearch, setRightSearch] = useState('')
   const [newId, setNewId] = useState('')
+  const [selectedCount, setSelectedCount] = useState(0)
 
   const debouncedLeftSearch = useDebounce(leftSearch, 300)
   const debouncedRightSearch = useDebounce(rightSearch, 300)
@@ -76,7 +77,7 @@ function App() {
               <div className="column-header">
                 <h2>
                   Выбранные
-                  <span className="count">0 элементов</span>
+                  <span className="count">{selectedCount} элементов</span>
                 </h2>
               </div>
               
@@ -88,8 +89,10 @@ function App() {
                   onChange={(e) => setRightSearch(e.target.value)}
                 />
               </div>
-
-              <RightList searchTerm={rightSearch} />
+                <RightList 
+                  searchTerm={debouncedRightSearch} 
+                  onTotalChange={setSelectedCount}  // 👈 должно быть!
+                />
             </div>
           </div>
 
