@@ -1,6 +1,6 @@
 {
   "name": "mifb",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "description": "Million Items Filtering Backend",
   "main": "dist/index.js",
   "scripts": {
