@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useState } from 'react'
 import { LeftList } from './components/LeftList'
+import { RightList } from './components/RightList'
 import { Footer } from './components/Footer'
 import './App.css'
 
@@ -17,6 +18,7 @@ const queryClient = new QueryClient({
 
 function App() {
   const [leftSearch, setLeftSearch] = useState('')
+  const [rightSearch, setRightSearch] = useState('')
   const [newId, setNewId] = useState('')
 
   return (
@@ -80,10 +82,7 @@ function App() {
                 />
               </div>
 
-              <div className="placeholder">
-                <h3>Нет выбранных элементов</h3>
-                <p>Нажмите + в левой колонке, чтобы добавить</p>
-              </div>
+              <RightList searchTerm={rightSearch} />
             </div>
           </div>
 
