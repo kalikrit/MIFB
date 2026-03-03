@@ -71,7 +71,7 @@ export const LeftList = ({ searchTerm }: LeftListProps) => {
   return (
     <div className="left-list-container">
       <div className="list-header">
-        <h3>Available Items <span className="count">({totalCount.toLocaleString()})</span></h3>
+        <h3>Доступные элементы <span className="count">({totalCount.toLocaleString()})</span></h3>
       </div>
       
       <div
@@ -113,18 +113,18 @@ export const LeftList = ({ searchTerm }: LeftListProps) => {
               >
                 {isLoaderRow ? (
                   hasNextPage ? (
-                    <div className="loader">Loading more...</div>
+                    <div className="loader">Загрузка...</div>
                   ) : (
-                    <div className="end-message">End of list</div>
+                    <div className="end-message">Конец списка</div>
                   )
                 ) : (
                   <>
                     <span className="item-id">#{item.id}</span>
                     <button 
                       className="select-btn"
-                      onClick={() => console.log('Select', item.id)} // TODO: добавить мутацию
+                      onClick={() => console.log('Выбрать', item.id)} // TODO: добавить мутацию
                     >
-                      ➕
+                      +
                     </button>
                   </>
                 )}
@@ -135,7 +135,7 @@ export const LeftList = ({ searchTerm }: LeftListProps) => {
       </div>
       
       {isFetchingNextPage && (
-        <div className="footer-loader">Loading next page...</div>
+        <div className="footer-loader">Загрузка следующей страницы...</div>
       )}
     </div>
   )

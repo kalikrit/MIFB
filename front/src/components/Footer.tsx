@@ -27,57 +27,41 @@ export const Footer = () => {
     }
     
     fetchVersion()
-    // Проверяем каждые 30 секунд (на случай перезапуска бэкенда)
     const interval = setInterval(fetchVersion, 30000)
     return () => clearInterval(interval)
   }, [])
   
   return (
-    <footer style={{
-      marginTop: '24px',
-      padding: '12px 24px',
-      borderTop: '1px solid #e0e0e0',
-      fontSize: '12px',
-      color: '#666',
-      display: 'flex',
-      justifyContent: 'space-between',
-      flexWrap: 'wrap',
-      gap: '16px',
-      background: '#fafafa'
-    }}>
-      <div style={{ display: 'flex', gap: '24px' }}>
-        <div>
-          <strong>Frontend:</strong> v{packageJson.version}
-        </div>
-        <div>
-          <strong>Backend:</strong>{' '}
+    <footer className="app-footer">
+      <div className="footer-info">
+        <span>
+          <strong>Фронтенд</strong> v{packageJson.version}
+        </span>
+        <span>
+          <strong>Бэкенд</strong>{' '}
           {loading ? (
-            <span>loading...</span>
+            'загрузка...'
           ) : backendInfo ? (
             <>
-              v{backendInfo.version} 
-              {backendInfo.commit !== 'local' && (
-                <span style={{ marginLeft: '8px', fontFamily: 'monospace' }}>
-                  ({backendInfo.commit.slice(0, 7)})
-                </span>
-              )}
+              v{backendInfo.version}
+              <span className="footer-commit">
+                {backendInfo.commit.slice(0, 7)}
+              </span>
             </>
           ) : (
-            <span style={{ color: '#d32f2f' }}>unavailable</span>
+            'недоступен'
           )}
-        </div>
+        </span>
+        <span>
+          <strong>Среда</strong> {backendInfo?.environment || import.meta.env.MODE}
+        </span>
       </div>
       
-      <div style={{ display: 'flex', gap: '24px' }}>
-        <div>
-          <strong>Environment:</strong>{' '}
-          {backendInfo?.environment || import.meta.env.MODE}
-        </div>
+      <div>
         {backendInfo?.timestamp && (
-          <div>
-            <strong>Updated:</strong>{' '}
+          <span>
             {new Date(backendInfo.timestamp).toLocaleTimeString()}
-          </div>
+          </span>
         )}
       </div>
     </footer>
