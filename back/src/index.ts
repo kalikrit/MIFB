@@ -40,16 +40,21 @@ const COMMIT_HASH = process.env.RENDER_GIT_COMMIT || 'local' // Render пере�
 const getLeftItems = (search: string, offset: number, limit: number) => {
   let candidates: number[] = []
   
+  // Получаем все ID из allItems
+  const allIds = Array.from(allItems.keys()).sort((a, b) => a - b)
+  
   if (search) {
-    for (let id = 1; id <= ITEMS_COUNT; id++) {
+    for (const id of allIds) {
       if (!selectedSet.has(id) && id.toString().includes(search)) {
         candidates.push(id)
       }
       if (candidates.length >= offset + limit) break
     }
   } else {
-    for (let id = 1; id <= ITEMS_COUNT; id++) {
-      if (!selectedSet.has(id)) candidates.push(id)
+    for (const id of allIds) {
+      if (!selectedSet.has(id)) {
+        candidates.push(id)
+      }
     }
   }
   

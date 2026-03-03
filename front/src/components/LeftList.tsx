@@ -18,6 +18,7 @@ export const LeftList = ({ searchTerm, addAction }: LeftListProps) => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    refetch,
     status,
     error
   } = useInfiniteQuery({
@@ -62,6 +63,11 @@ export const LeftList = ({ searchTerm, addAction }: LeftListProps) => {
     allItems.length, 
     rowVirtualizer.range?.endIndex
   ])
+
+  // рефетч при изменении поиска
+  useEffect(() => {
+    refetch()
+  }, [searchTerm, refetch])
   
   if (status === 'pending') {
     return <div className="loading">Loading initial data...</div>
