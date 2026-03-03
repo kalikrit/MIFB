@@ -18,18 +18,16 @@ import {
 } from '@dnd-kit/sortable'
 import { api } from '../api/client'
 import { SortableItem } from './SortableItem'
-import { useDeselectItem, useReorderItems } from '../hooks/useItemMutations'
 
 interface RightListProps {
   searchTerm: string
   onTotalChange?: (total: number) => void
+  addAction: (action: any) => void
 }
 
-export const RightList = ({ searchTerm, onTotalChange }: RightListProps) => {
+export const RightList = ({ searchTerm, onTotalChange, addAction }: RightListProps) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [activeId, setActiveId] = useState<number | null>(null)
-  const deselectMutation = useDeselectItem()
-  const reorderMutation = useReorderItems()
   
   // Настройка сенсоров для DnD
   const sensors = useSensors(
@@ -57,6 +55,10 @@ export const RightList = ({ searchTerm, onTotalChange }: RightListProps) => {
   const totalCount = data?.pages[0]?.total ?? 0
   const fullOrder = data?.pages[0]?.fullOrder ?? [] // полный порядок для DnD
   
+  const handleDeselect = (id: number) => {
+    addAction({ type: 'deselect', id })
+  }
+
   useEffect(() => {
     if (onTotalChange) {  
       onTotalChange(totalCount)
@@ -107,8 +109,7 @@ export const RightList = ({ searchTerm, onTotalChange }: RightListProps) => {
     
     const newFullOrder = arrayMove(fullOrder, oldIndex, newIndex)
     
-    // 👇 Отправляем на сервер
-    reorderMutation.mutate(newFullOrder)
+    addAction({ type: 'reorder', order: newFullOrder }) 
   }
   
   if (status === 'pending') {
@@ -196,8 +197,7 @@ export const RightList = ({ searchTerm, onTotalChange }: RightListProps) => {
                       <span className="item-id">#{item.id}</span>
                       <button 
                         className="deselect-btn"
-                        onClick={() => deselectMutation.mutate(item.id)}
-                        disabled={deselectMutation.isPending}
+                        onClick={() => handleDeselect(item.id)}
                       >
                         ×
                       </button>

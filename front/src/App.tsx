@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useState } from 'react'
 import { useDebounce } from './hooks/useDebounce'
+import { useActionQueue } from './hooks/useActionQueue'
 import { LeftList } from './components/LeftList'
 import { RightList } from './components/RightList'
 import { Footer } from './components/Footer'
@@ -22,7 +23,9 @@ function App() {
   const [rightSearch, setRightSearch] = useState('')
   const [newId, setNewId] = useState('')
   const [selectedCount, setSelectedCount] = useState(0)
-
+  
+  const { addAction } = useActionQueue(queryClient)
+  
   const debouncedLeftSearch = useDebounce(leftSearch, 300)
   const debouncedRightSearch = useDebounce(rightSearch, 300)
 
@@ -68,8 +71,10 @@ function App() {
                 <button>Добавить</button>
               </div>
 
-              <LeftList searchTerm={debouncedLeftSearch} />
-              <RightList searchTerm={debouncedRightSearch} />
+              <LeftList 
+                searchTerm={debouncedLeftSearch} 
+                addAction={addAction} 
+              />
             </div>
 
             {/* Правая колонка */}
@@ -89,10 +94,11 @@ function App() {
                   onChange={(e) => setRightSearch(e.target.value)}
                 />
               </div>
-                <RightList 
-                  searchTerm={debouncedRightSearch} 
-                  onTotalChange={setSelectedCount}  // 👈 должно быть!
-                />
+              <RightList 
+                searchTerm={debouncedRightSearch} 
+                onTotalChange={setSelectedCount} 
+                addAction={addAction} 
+              />
             </div>
           </div>
 

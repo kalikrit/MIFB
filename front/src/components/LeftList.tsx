@@ -1,19 +1,18 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useRef, useEffect } from 'react'
-import { useSelectItem } from '../hooks/useItemMutations'
 import { api } from '../api/client'
 import './LeftList.css'
 
 interface LeftListProps {
   searchTerm: string
+  addAction: (action: any) => void 
 }
 
-export const LeftList = ({ searchTerm }: LeftListProps) => {
+export const LeftList = ({ searchTerm, addAction }: LeftListProps) => {
   const scrollRef = useRef<HTMLDivElement>(null)
-  const selectMutation = useSelectItem()
   
-  // ✅ Добавляем searchTerm в queryKey и передаём в API
+  // Добавляем searchTerm в queryKey и передаём в API
   const {
     data,
     fetchNextPage,
@@ -22,13 +21,17 @@ export const LeftList = ({ searchTerm }: LeftListProps) => {
     status,
     error
   } = useInfiniteQuery({
-    queryKey: ['left-items', searchTerm],  // 👈 searchTerm в ключе!
+    queryKey: ['left-items', searchTerm], 
     queryFn: ({ pageParam = 0 }) => 
-      api.getLeftItems(searchTerm, pageParam, 20),  // 👈 передаём в API
+      api.getLeftItems(searchTerm, pageParam, 20),
     getNextPageParam: (lastPage) => lastPage.hasMore ? lastPage.nextOffset : undefined,
     initialPageParam: 0,
   })
   
+  const handleSelect = (id: number) => {
+    addAction({ type: 'select', id })
+  }
+
   // Склеиваем все страницы в один массив
   const allItems = data?.pages.flatMap(page => page.items) ?? []
   const totalCount = data?.pages[0]?.total ?? 0
@@ -122,7 +125,7 @@ export const LeftList = ({ searchTerm }: LeftListProps) => {
                     <span className="item-id">#{item.id}</span>
                     <button 
                       className="select-btn"
-                      onClick={() => selectMutation.mutate(item.id)}
+                      onClick={() => handleSelect(item.id)}
                     >
                       +
                     </button>

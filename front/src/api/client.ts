@@ -76,7 +76,7 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ actions })
     })
-    if (!response.ok) throw new Error('Batch failed')
+    if (!response.ok) throw new Error('Failed to send batch')
     return response.json()
   }
 }
