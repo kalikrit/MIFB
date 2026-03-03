@@ -78,5 +78,18 @@ export const api = {
     })
     if (!response.ok) throw new Error('Failed to send batch')
     return response.json()
+  },
+
+  addNewItem: async (id: number) => {
+    const response = await fetch(`${API_BASE_URL}/api/items`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    })
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.error || 'Failed to add item')
+    }
+    return response.json()
   }
 }
