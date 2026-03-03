@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { useState } from 'react'
+import { useState, useDeferredValue } from 'react'
+import { useDebounce } from './hooks/useDebounce'
 import { LeftList } from './components/LeftList'
 import { RightList } from './components/RightList'
 import { Footer } from './components/Footer'
@@ -20,6 +21,9 @@ function App() {
   const [leftSearch, setLeftSearch] = useState('')
   const [rightSearch, setRightSearch] = useState('')
   const [newId, setNewId] = useState('')
+
+  const debouncedLeftSearch = useDebounce(leftSearch, 300)
+  const debouncedRightSearch = useDebounce(rightSearch, 300)
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -63,7 +67,8 @@ function App() {
                 <button>Добавить</button>
               </div>
 
-              <LeftList searchTerm={leftSearch} />
+              <LeftList searchTerm={debouncedLeftSearch} />
+              <RightList searchTerm={debouncedRightSearch} />
             </div>
 
             {/* Правая колонка */}
@@ -79,6 +84,8 @@ function App() {
                 <input
                   type="text"
                   placeholder="Фильтр выбранных..."
+                  value={rightSearch}
+                  onChange={(e) => setRightSearch(e.target.value)}
                 />
               </div>
 

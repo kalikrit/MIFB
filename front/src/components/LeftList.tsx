@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useEffect } from 'react'
 import { useSelectItem } from '../hooks/useItemMutations'
 import { api } from '../api/client'
 import './LeftList.css'
@@ -10,10 +10,10 @@ interface LeftListProps {
 }
 
 export const LeftList = ({ searchTerm }: LeftListProps) => {
-  const [enabled, setEnabled] = useState(true)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const selectMutation = useSelectItem()
   
-  // Инфинити-запрос с TanStack Query
+  // ✅ Добавляем searchTerm в queryKey и передаём в API
   const {
     data,
     fetchNextPage,
@@ -22,12 +22,11 @@ export const LeftList = ({ searchTerm }: LeftListProps) => {
     status,
     error
   } = useInfiniteQuery({
-    queryKey: ['left-items', searchTerm],
+    queryKey: ['left-items', searchTerm],  // 👈 searchTerm в ключе!
     queryFn: ({ pageParam = 0 }) => 
-      api.getLeftItems(searchTerm, pageParam, 20),
+      api.getLeftItems(searchTerm, pageParam, 20),  // 👈 передаём в API
     getNextPageParam: (lastPage) => lastPage.hasMore ? lastPage.nextOffset : undefined,
     initialPageParam: 0,
-    enabled, // можно отключать при необходимости
   })
   
   // Склеиваем все страницы в один массив
@@ -41,8 +40,6 @@ export const LeftList = ({ searchTerm }: LeftListProps) => {
     estimateSize: () => 45, // высота строки в пикселях
     overscan: 5, // сколько строк рендерить выше/ниже видимой области
   })
-  
-  const selectMutation = useSelectItem()
 
   // Подгрузка при скролле
   useEffect(() => {
