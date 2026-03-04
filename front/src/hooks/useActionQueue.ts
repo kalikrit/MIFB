@@ -26,35 +26,18 @@ export const useActionQueue = (queryClient: QueryClient) => {
   // Дедупликация - оставляем только последние значимые действия
   const deduplicate = (actions: Action[]): Action[] => {
     const result: Action[] = []
-    const seenSelect = new Set<number>()
-    const seenDeselect = new Set<number>()
-    let lastReorder: Action | null = null
+    const seen = new Set<string>()
     
-    // Идём с конца, чтобы оставить последние действия
+    // Идём с конца, оставляем только последнее действие для каждого id
     for (let i = actions.length - 1; i >= 0; i--) {
       const action = actions[i]
+      const key = action.type === 'reorder' 
+        ? 'reorder' 
+        : `${action.type}-${action.id}`
       
-      switch (action.type) {
-        case 'select':
-          if (!seenDeselect.has(action.id) && !seenSelect.has(action.id)) {
-            seenSelect.add(action.id)
-            result.unshift(action)
-          }
-          break
-          
-        case 'deselect':
-          if (!seenSelect.has(action.id) && !seenDeselect.has(action.id)) {
-            seenDeselect.add(action.id)
-            result.unshift(action)
-          }
-          break
-          
-        case 'reorder':
-          if (!lastReorder) {
-            lastReorder = action
-            result.unshift(action)
-          }
-          break
+      if (!seen.has(key)) {
+        seen.add(key)
+        result.unshift(action)
       }
     }
     

@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useRef, useEffect } from 'react'
 import { api } from '../api/client'
@@ -11,6 +11,7 @@ interface LeftListProps {
 
 export const LeftList = ({ searchTerm, addAction }: LeftListProps) => {
   const scrollRef = useRef<HTMLDivElement>(null)
+  const queryClient = useQueryClient()
   
   // Добавляем searchTerm в queryKey и передаём в API
   const {
@@ -30,6 +31,18 @@ export const LeftList = ({ searchTerm, addAction }: LeftListProps) => {
   })
   
   const handleSelect = (id: number) => {
+    // Оптимистично удаляем из левого списка
+    queryClient.setQueryData(['left-items', searchTerm], (old: any) => {
+      if (!old) return old
+      
+      const newPages = old.pages.map((page: any) => ({
+        ...page,
+        items: page.items.filter((item: any) => item.id !== id)
+      })).filter((page: any) => page.items.length > 0)
+      
+      return { ...old, pages: newPages }
+    })
+    
     addAction({ type: 'select', id })
   }
 
@@ -70,11 +83,11 @@ export const LeftList = ({ searchTerm, addAction }: LeftListProps) => {
   }, [searchTerm, refetch])
   
   if (status === 'pending') {
-    return <div className="loading">Loading initial data...</div>
+    return <div className="loading">Загрузка данных...</div>
   }
   
   if (status === 'error') {
-    return <div className="error">Error: {error?.message}</div>
+    return <div className="error">Ошибка: {error?.message}</div>
   }
   
   return (

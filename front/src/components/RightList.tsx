@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQueryClient  } from '@tanstack/react-query'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useRef, useEffect, useState } from 'react'
 import {
@@ -28,6 +28,7 @@ interface RightListProps {
 export const RightList = ({ searchTerm, onTotalChange, addAction }: RightListProps) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [activeId, setActiveId] = useState<number | null>(null)
+  const queryClient = useQueryClient()
   
   // Настройка сенсоров для DnD
   const sensors = useSensors(
@@ -56,6 +57,24 @@ export const RightList = ({ searchTerm, onTotalChange, addAction }: RightListPro
   const fullOrder = data?.pages[0]?.fullOrder ?? [] // полный порядок для DnD
   
   const handleDeselect = (id: number) => {
+    // Оптимистично удаляем из UI
+    queryClient.setQueryData(['right-items', searchTerm], (old: any) => {
+      if (!old) return old
+      
+      const newPages = old.pages.map((page: any) => ({
+        ...page,
+        items: page.items.filter((item: any) => item.id !== id)
+      })).filter((page: any) => page.items.length > 0) // удаляем пустые страницы
+      
+      // Обновляем total в первой странице
+      if (newPages[0]) {
+        newPages[0].total = (newPages[0].total || 1) - 1
+      }
+      
+      return { ...old, pages: newPages }
+    })
+    
+    // Добавляем в очередь
     addAction({ type: 'deselect', id })
   }
 
