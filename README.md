@@ -1,13 +1,13 @@
-# 🎯 MIFB — Million Items Filtering
+# MIFB — Million Items Filtering
 
 список из 1,000,000 элементов с выбором, сортировкой Drag & Drop, инфинити-скроллом и batch-очередью.
 
-## 🌍 Демо
+## Демо
 
 - **Фронтенд**: [https://kalikrit.github.io/MIFB/](https://kalikrit.github.io/MIFB/)
 - **Бэкенд API**: [https://mifb.onrender.com](https://mifb.onrender.com)
 
-## 📦 Версии
+## Версии
 
 | Компонент | Версия | Последние изменения |
 |-----------|--------|---------------------|
@@ -85,7 +85,7 @@ npm run dev  # http://localhost:5173
 - Версионирование в футере (front/back/commit/env)
 - Полная поддержка мобильных устройств (через PointerSensor)
 
-## 📊 Версионирование в футере
+## Версионирование в футере
 
 ```
 Фронтенд v0.12.0 | Бэкенд v1.4.1 (a1b2c3d) | Среда production | 15:45:23
