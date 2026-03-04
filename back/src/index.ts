@@ -5,10 +5,22 @@ import path from 'path'
 const app = express()
 const PORT = process.env.PORT || 3001
 
-// ✅ CORS
+// CORS
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173')
-  res.setHeader('Access-Control-Allow-Origin', 'https://kalikrit.github.io/MIFB/')
+  const origin = req.headers.origin
+  
+  // Разрешённые источники
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'https://kalikrit.github.io'
+  ]
+  
+  // Устанавливаем заголовок только если источник разрешён
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin)
+  }
+  
+  // Остальные заголовки
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
   
