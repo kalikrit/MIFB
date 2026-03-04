@@ -36,15 +36,15 @@ function AppContent() {
   
   // Получаем текущий максимальный ID из кэша
   const maxId = useMemo(() => {
-    const data = queryClient.getQueryData(['left-items', ''])
-    if (data?.pages) {
-      const allItems = data.pages.flatMap((page: any) => page.items)
+    const data = queryClient.getQueryData<{ pages: any[] }>(['left-items', ''])
+    if (data?.pages && data.pages.length > 0) {
+      const allItems = data.pages.flatMap((page: any) => page.items || [])
       if (allItems.length > 0) {
         const max = Math.max(...allItems.map((item: any) => item.id))
         return max
       }
     }
-    return 1000000 // начальное значение
+    return 1000000
   }, [queryClient])
   
   const handleAddItem = (e: React.FormEvent) => {

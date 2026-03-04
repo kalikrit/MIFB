@@ -11,8 +11,8 @@ export const useActionQueue = (queryClient: QueryClient) => {
   const queue = useRef<Action[]>([])
   const isSending = useRef(false)
   const queryClientRef = useRef(queryClient)
-  const pendingTimeout = useRef<NodeJS.Timeout>()
-  const sendScheduled = useRef(false)  // 👈 новый флаг
+  const pendingTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const sendScheduled = useRef(false) 
   
   // Настройки
   const MAX_DELAY = 2000        // максимум ждём 2 секунды
@@ -81,7 +81,8 @@ export const useActionQueue = (queryClient: QueryClient) => {
   // Добавление действия в очередь
   const addAction = useCallback((action: Action) => {
     queue.current.push(action)
-    console.log('📥 Action added:', action.type, action.id || '', 'Queue size:', queue.current.length)
+    const actionId = action.type === 'reorder' ? 'reorder' : action.id
+    console.log('📥 Action added:', action.type, actionId, 'Queue size:', queue.current.length)
     
     // Если набрали минимум действий и отправка ещё не запланирована
     if (queue.current.length >= MIN_ACTIONS && !isSending.current && !sendScheduled.current) {
